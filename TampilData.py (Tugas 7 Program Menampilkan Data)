@@ -1,0 +1,41 @@
+import mysql.connector
+import os
+
+#untuk memformat koma
+import locale
+locale.setlocale(locale.LC_ALL,'')
+'en_US.utf8'
+
+db = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    passwd="",
+    database="dbpersediaan"
+)
+if db.is_connected():
+    print("Berhasil terhubung ke server MySQL")
+
+mycursor = db.cursor()
+sql="select * from tbBarang"
+mycursor.execute(sql)
+myresult = mycursor.fetchall()
+
+os.system('cls')
+print("                        LAPORAN DATA BARANG" )
+print("                    PT. PUSAKA DHARMA INDONESIA" )
+print("+--------------------------------------------------------------------+")
+print("  No Kode  Nama            Satuan        Harga  Stok    Nilai Barang ")
+print("+--------------------------------------------------------------------+")
+no=0       #variabel nomor urut
+grtotal=0  #variabel grand total
+for data in myresult:
+#{
+ no = no + 1
+ nilai_brg =data[3]*data[4]
+ grtotal = grtotal + nilai_brg
+ frm="{:4} {:5} {:15} {:8} {:10n} {:3} {:12n}"  #format mencetak
+ print(frm.format(no,data[0],data[1],data[2],data[3],data[4],nilai_brg))
+#}
+print("+--------------------------------------------------------------------+")
+print("                                         Grand Total : {:12n}",format(grtotal))
+print("+--------------------------------------------------------------------+")
