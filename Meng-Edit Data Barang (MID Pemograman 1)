@@ -1,0 +1,72 @@
+import mysql.connector
+import os
+
+db = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    passwd="",
+    database="dbPersediaan"
+)
+if db.is_connected():
+    print("Berhasil terhubung ke server MySQL")
+
+mycursor = db.cursor()
+
+lagi='Y'
+while lagi.upper()=='Y':    #upper = mengubah menjadi capital
+    os.system('cls')    #bersihkan layar
+    print("\033[92m")   #ubah warna kode 91m - 95m
+    print("+------------------------------------+")
+    print("      Form Update Data Barang         ")
+    print("+------------------------------------+")
+    #01 - masukkan kunci utama---------------------------------------------------------------------------
+    kdbrg=input("Kode Barang      : ")
+
+    #02 - Cari ke Tabel----------------------------------------------------------------------------------
+    sql="SELECT * FROM tbbarang WHERE kd_barang="+"'"+kdbrg+"'"
+    mycursor.execute(sql)
+    recordnya = mycursor.fetchone()
+
+    if recordnya == None:   #jika query select hasilnya kosong (tidak ketemu)
+        print("kode %s Tidak Ditemukan"%kdbrg)
+    else:
+        #03 - Tampilkan Datanya---------------------------------------------------------------------------
+        #kode barang ditemukan
+        nmbrg = recordnya[1]
+        sat   = recordnya[2]
+        hrg   = recordnya[3]
+        stok  = recordnya[4]
+
+    #cetak data barang yang ditemukan
+    print("Nama Barang      :",nmbrg)
+    print("Satuan Barang    :",sat)
+    print("Harga Barang     :",hrg)
+    print("Stok Barang      :",stok)
+    print("+---------------------------------+")
+    print("\033[0m")    #ubah warna kode 91m - 95m
+
+    edit=input("Data Mau Diedit[Y/T]: ")
+    if edit.upper()=='Y':
+        #04 - Lakukan Perubahan Data-------------------------------------------------------------------
+        nmbrgE=input("Nama Barang   : ")
+        satE  =input("Satuan Barang : ")
+        hrgE  =input("Harga Barang  : ")
+        stokE =input("Stok Barang   : ")
+        #jika field edit tidak kosong maka ambil nilainya
+        if nmbrgE!="": nmbrg=nmbrgE
+        if satE!="": sat=satE
+        if hrgE!="": hrg=hrgE
+        if stokE!="": stok=stokE
+        simpan=input("Data Mau Disimpan[Y/T]: ")
+        if simpan.upper()=='Y':
+            #05 - Simpan perubahan data--------------------------------------
+            sql = "UPDATE tbBarang SET nm_barang = %s, satuan= %s,harga=%s, stok=%s " \
+                  "WHERE kd_barang = %s"
+            val = (nmbrg,sat,hrg,stok,kdbrg)
+        mycursor.execute(sql, val)
+        db.commit()
+        print(mycursor.rowcount, " record sudah diupdate.")
+    lagi=input("Input Data Lagi [Y/T]: ")
+
+
+
